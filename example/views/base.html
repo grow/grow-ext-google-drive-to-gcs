@@ -1,0 +1,5 @@
+{% set bucket_path = "/grow-ext-drive-to-gcs/uploads/" %}
+{% set file_id = "https://drive.google.com/open?id=0B2D-9SyFrh1CcHVjOGlsT0Y4UG8" %}
+{% set synced_file = google_drive_to_gcs(bucket_path, file_id) %}
+data: {{synced_file}}
+gs_path: {{synced_file.gs_path}}

@@ -1,0 +1,7 @@
+**.mo
+**.pyc
+example/.podcache.yaml
+example/build/
+example/extensions/
+example/podcache.json
+objectcache.json

@@ -1,0 +1,3 @@
+extensions:
+  jinja2:
+  - extensions.google_drive_to_gcs.GoogleDriveToGCSExtension
