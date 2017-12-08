@@ -28,8 +28,13 @@ SCOPES = [
 
 
 def url_to_file_id(url):
+    # Formatted as https://drive.google.com/file/d/<file>/view?usp=sharing
     if url.endswith('sharing'):
         return url.split('/')[-2]
+    # Formatted as https://drive.google.com/file/d/<file>
+    if url.startswith('https://drive.google.com/file/d/'):
+        return url.split('/')[-1]
+    # Formatted as https://drive.google.com/open?id=<file>
     return url[url.index('=') + 1:]
 
 
