@@ -29,7 +29,7 @@ SCOPES = [
 
 def url_to_file_id(url):
     # Formatted as https://drive.google.com/file/d/<file>/view?usp=sharing
-    if url.endswith('sharing'):
+    if url.endswith('sharing') or url.endswith('/view'):
         return url.split('/')[-2]
     # Formatted as https://drive.google.com/file/d/<file>
     if url.startswith('https://drive.google.com/file/d/'):
