@@ -18,6 +18,7 @@ import os
 import time
 
 DEFAULT_BUCKET = app_identity.get_default_gcs_bucket_name()
+SERVICE_ACCOUNT_EMAIL = app_identity.get_service_account_name()
 
 SCOPE = [
     'https://www.googleapis.com/auth/devstorage.full_control',
@@ -115,12 +116,12 @@ def download_resource(resource_id, gcs_path_format=None, queue='sync'):
     mime_type = resp.get('mimeType', '')
     if mime_type == 'application/vnd.google-apps.folder':
         logging.info('Processing folder: {} ({})'.format(title, resource_id))
-        process_folder_response(resp, gcs_path_format=gcs_path_format, queue=queue)
+        return process_folder_response(resp, gcs_path_format=gcs_path_format, queue=queue)
     elif mime_type in SKIP_MIMETYPES:
         logging.info('Skipping file due to incompatible mimetype: {} ({})'.format(title, mime_type))
     else:
         logging.info('Processing file: {} ({})'.format(title, resource_id))
-        uploaded_gcs_path = replicate_asset_to_gcs(resp, gcs_path_format=gcs_path_format)
+        return replicate_asset_to_gcs(resp, gcs_path_format=gcs_path_format)
 
 
 def process_folder_response(resp, gcs_path_format, queue='sync'):
@@ -129,9 +130,12 @@ def process_folder_response(resp, gcs_path_format, queue='sync'):
     gcs_path_format = os.path.join(gcs_path_format, folder_title)
     logging.info('Using folder -> {}'.format(gcs_path_format))
     child_resource_responses = download_folder(resp['id'])
+    uploaded_paths = []
     for child in child_resource_responses:
-        download_resource(child['id'], gcs_path_format=gcs_path_format)
+        path = download_resource(child['id'], gcs_path_format=gcs_path_format)
         # deferred.defer(download_resource, child['id'], queue=queue, _queue=queue)
+        uploaded_paths.append(path)
+    return uploaded_paths
 
 
 def replicate_asset_to_gcs(resp, gcs_path_format):

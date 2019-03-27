@@ -1,0 +1,16 @@
+body {
+  background: #efefef;
+  font-family: 'Roboto', arial, 'sans-serif';
+  -webkit-font-smoothing: antialiased;
+}
+
+.header {
+  text-align: center;
+  background: #fff;
+  border-radius: 20px;
+  padding: 30px;
+}
+
+.header__form {
+  display: flex;
+}

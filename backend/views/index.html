@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block main %}
+<div class=header">
+  <div class=header__instructions">
+  Ensure <b>{{service_account_email}}</b> has access to Google Drive and Google Cloud Storage.
+  </div>
+  <form class="header__form" action="" method="post">
+    <div class="header__form__side">
+      <label>Google Drive Folder ID</label>
+      <input type="text" name="folder_id" placeholder="XXX" value="{{folder_id}}">
+    </div>
+    <div class="header__form__side">
+      <label>Google Cloud Storage Path</label>
+      <input type="text" name="gcs_path_format" placeholder="/bucket/path/to/base/folder/" value="{{gcs_path_format}}">
+    </div>
+    <div class="header__form__side">
+      <button type="submit">Upload</button>
+    </div>
+  </form>
+</div>
+
+{% if paths %}
+  <pre>{% for path in paths %}{{path}}
+  {% endfor %}</pre>
+{% endif %}
+
+{% endblock %}
