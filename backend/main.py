@@ -33,7 +33,8 @@ class MainHandler(webapp2.RequestHandler):
         self.render_template('index.html', kwargs)
 
     def get(self):
-        self.render_template('index.html')
+        kwargs = {}
+        self.render_template('index.html', kwargs)
 
 
 app = webapp2.WSGIApplication([

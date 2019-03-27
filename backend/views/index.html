@@ -1,8 +1,8 @@
 {% extends "base.html" %}
 
 {% block main %}
-<div class=header">
-  <div class=header__instructions">
+<div class="header">
+  <div class="header__instructions">
   Ensure <b>{{service_account_email}}</b> has access to Google Drive and Google Cloud Storage.
   </div>
   <form class="header__form" action="" method="post">
@@ -11,18 +11,29 @@
       <input type="text" name="folder_id" placeholder="XXX" value="{{folder_id}}">
     </div>
     <div class="header__form__side">
+      <div class="header__form__side__icon">
+        <i class="material-icons">arrow_forward</i>
+      </div>
+    </div>
+    <div class="header__form__side">
       <label>Google Cloud Storage Path</label>
-      <input type="text" name="gcs_path_format" placeholder="/bucket/path/to/base/folder/" value="{{gcs_path_format}}">
+      <input type="text" name="gcs_path_format" placeholder="/bucket/path/to/base/folder/" value="{{gcs_path_format}}" ng-model="gcs_path">
     </div>
     <div class="header__form__side">
       <button type="submit">Upload</button>
     </div>
   </form>
+  <div class="header__info">
+    &nbsp;
+    <span ng-if="gcs_path">
+      Files will be uploaded to: <b>[[gcs_path]]/&lt;Drive Folder Title&gt;</b>
+    </span>
+  </div>
 </div>
 
 {% if paths %}
-  <pre>{% for path in paths %}{{path}}
-  {% endfor %}</pre>
+  <textarea readonly>{% for path in paths %}{{path}}
+  {% endfor %}</textarea>
 {% endif %}
 
 {% endblock %}

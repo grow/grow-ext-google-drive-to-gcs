@@ -1,7 +1,16 @@
 <!DOCTYPE html>
-<meta charset="utf-8">
-<title>Google Drive to Google Cloud Storage Uploader</title>
-<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
-<link rel="stylesheet" href="/static/main.css">
-<body>
-  {% block main %}{% endblock %}
+<html>
+  <meta charset="utf-8">
+  <title>Google Drive to Google Cloud Storage Uploader</title>
+  <link href="https://fonts.googleapis.com/css?family=Roboto|Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="/static/main.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.5/angular.min.js"></script>
+  <body>
+    {% block main %}{% endblock %}
+  <script>
+    var app = angular.module('uploader', []);
+    app.config(['$interpolateProvider', function($interpolateProvider) {
+      $interpolateProvider.startSymbol('[[').endSymbol(']]');
+    }]);
+    angular.bootstrap(document, ['uploader']);
+  </script>
