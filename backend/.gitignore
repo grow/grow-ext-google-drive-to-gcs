@@ -1,0 +1,4 @@
+*.bak
+*.pem
+*.pyc
+lib
