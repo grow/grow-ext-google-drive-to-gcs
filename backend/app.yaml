@@ -1,7 +1,7 @@
 api_version: 1
 runtime: python27
 threadsafe: true
-service: drive-to-gcs
+service: uploader
 
 libraries:
 - name: webapp2
@@ -9,7 +9,13 @@ libraries:
 - name: jinja2
   version: latest
 
+builtins:
+- deferred: on
+
 handlers:
+- url: /_ah/queue/deferred
+  script: google.appengine.ext.deferred.deferred.application
+  login: admin
 - url: /static/
   static_dir: static/
 - url: .*

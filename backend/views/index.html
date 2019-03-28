@@ -17,7 +17,7 @@
     </div>
     <div class="header__form__side">
       <label>Google Cloud Storage Path</label>
-      <input type="text" name="gcs_path_format" placeholder="/bucket/path/to/base/folder/" value="{{gcs_path_format}}" ng-model="gcs_path">
+      <input type="text" name="gcs_path_format" placeholder="/bucket/path/to/base/folder/" value="{{gcs_path_format}}" ng-model="gcs_path" ng-init="gcs_path = '{{gcs_path_format}}'">
     </div>
     <div class="header__form__side">
       <button type="submit">Upload</button>
@@ -33,7 +33,7 @@
 
 {% if paths %}
   <textarea readonly>{% for path in paths %}{{path}}
-  {% endfor %}</textarea>
+{% endfor %}</textarea>
 {% endif %}
 
 {% endblock %}

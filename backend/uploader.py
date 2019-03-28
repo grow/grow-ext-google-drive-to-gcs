@@ -121,6 +121,8 @@ def download_resource(resource_id, gcs_path_format=None, queue='sync'):
         logging.info('Skipping file due to incompatible mimetype: {} ({})'.format(title, mime_type))
     else:
         logging.info('Processing file: {} ({})'.format(title, resource_id))
+        # NOTE: Can use deferred here instead.
+        # return deferred.defer(replicate_asset_to_gcs, resp, gcs_path_format)
         return replicate_asset_to_gcs(resp, gcs_path_format=gcs_path_format)
 
 
@@ -133,7 +135,6 @@ def process_folder_response(resp, gcs_path_format, queue='sync'):
     uploaded_paths = []
     for child in child_resource_responses:
         path = download_resource(child['id'], gcs_path_format=gcs_path_format)
-        # deferred.defer(download_resource, child['id'], queue=queue, _queue=queue)
         uploaded_paths.append(path)
     return uploaded_paths
 
