@@ -1,6 +1,3 @@
-from google.appengine.ext import vendor
-vendor.add('lib')
-
 import os
 import jinja2
 import uploader
@@ -24,16 +21,31 @@ class MainHandler(webapp2.RequestHandler):
     def post(self):
         folder_id = self.request.POST['folder_id']
         gcs_path_format = self.request.POST['gcs_path_format']
-        paths = uploader.download_resource(resource_id=folder_id, gcs_path_format=gcs_path_format)
+        tag = 'replicate-{}'.format(folder_id)
+        tasks = uploader.download_resource(resource_id=folder_id, gcs_path_format=gcs_path_format, tag=tag)
         kwargs = {
             'folder_id': folder_id,
             'gcs_path_format': gcs_path_format,
-            'paths': paths,
+            'tag': tag,
+            'tasks': tasks,
+#            'paths': paths,
         }
         self.render_template('index.html', kwargs)
 
     def get(self):
-        kwargs = {}
+        tag = self.request.get('tag')
+        folder_id = self.request.get('folder_id')
+        gcs_path_format = self.request.get('gcs_path_format')
+        entities = None
+        if tag:
+            query = uploader.GoogleCloudStorageUploadStatus.query()
+            query = query.filter(uploader.GoogleCloudStorageUploadStatus.tag == tag)
+            entities = query.fetch()
+        kwargs = {
+            'folder_id': folder_id,
+            'gcs_path_format': gcs_path_format,
+            'entities': entities,
+        }
         self.render_template('index.html', kwargs)
 
 

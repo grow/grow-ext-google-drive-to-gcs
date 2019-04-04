@@ -10,11 +10,13 @@
       <label>Google Drive Folder ID</label>
       <input type="text" name="folder_id" placeholder="XXX" value="{{folder_id}}">
     </div>
+    {#
     <div class="header__form__side">
       <div class="header__form__side__icon">
         <i class="material-icons">arrow_forward</i>
       </div>
     </div>
+    #}
     <div class="header__form__side">
       <label>Google Cloud Storage Path</label>
       <input type="text" name="gcs_path_format" placeholder="/bucket/path/to/base/folder/" value="{{gcs_path_format}}" ng-model="gcs_path" ng-init="gcs_path = '{{gcs_path_format}}'">
@@ -30,6 +32,29 @@
     </span>
   </div>
 </div>
+
+{% if entities %}
+<table>
+  <tr>
+    <th></th>
+    <th>Path</th>
+    <th>Modified</th>
+  </tr>
+  {% for ent in entities %}
+  <tr>
+    <td style="user-select:none">{{ent.status}}</td>
+    <td>{{ent.bucket_path}}</td>
+    <td style="user-select:none">{{ent.modified}}</td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+
+{% if tasks %}
+<a href="?folder_id={{folder_id}}&gcs_path_format={{gcs_path_format}}&tag={{tag}}">Check status</a>
+<br><br>
+<textarea readonly>{{tasks|length}} tasks with tag {{tag}}</textarea>
+{% endif %}
 
 {% if paths %}
   <textarea readonly>{% for path in paths %}{{path}}

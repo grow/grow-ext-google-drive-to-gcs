@@ -3,6 +3,7 @@ from google.appengine.api import memcache
 from google.appengine.api import urlfetch
 from google.appengine.api import urlfetch_errors
 from google.appengine.ext import deferred
+from google.appengine.ext import ndb
 from googleapiclient import discovery
 from googleapiclient import errors
 from googleapiclient import http
@@ -50,6 +51,13 @@ class Error(Exception):
 
 class UploadRequiredError(Error):
     pass
+
+
+class GoogleCloudStorageUploadStatus(ndb.Model):
+    tag = ndb.StringProperty()
+    bucket_path = ndb.StringProperty()
+    status = ndb.StringProperty()
+    modified = ndb.DateTimeProperty(auto_now=True)
 
 
 service = None
@@ -105,7 +113,7 @@ def download_folder(resource_id, process_deletes=True):
     return child_resource_responses
 
 
-def download_resource(resource_id, gcs_path_format=None, queue='sync'):
+def download_resource(resource_id, gcs_path_format=None, tag=None):
     service = get_service()
     resp = service.files().get(fileId=resource_id).execute()
     if 'mimeType' not in resp:
@@ -116,17 +124,17 @@ def download_resource(resource_id, gcs_path_format=None, queue='sync'):
     mime_type = resp.get('mimeType', '')
     if mime_type == 'application/vnd.google-apps.folder':
         logging.info('Processing folder: {} ({})'.format(title, resource_id))
-        return process_folder_response(resp, gcs_path_format=gcs_path_format, queue=queue)
+        return process_folder_response(resp, gcs_path_format=gcs_path_format, tag=tag)
     elif mime_type in SKIP_MIMETYPES:
         logging.info('Skipping file due to incompatible mimetype: {} ({})'.format(title, mime_type))
     else:
         logging.info('Processing file: {} ({})'.format(title, resource_id))
         # NOTE: Can use deferred here instead.
-        # return deferred.defer(replicate_asset_to_gcs, resp, gcs_path_format)
+        return deferred.defer(replicate_asset_to_gcs, resp, gcs_path_format, tag=tag)
         return replicate_asset_to_gcs(resp, gcs_path_format=gcs_path_format)
 
 
-def process_folder_response(resp, gcs_path_format, queue='sync'):
+def process_folder_response(resp, gcs_path_format, tag=None):
     resource_id = resp['id']
     folder_title = resp['title']
     gcs_path_format = os.path.join(gcs_path_format, folder_title)
@@ -134,13 +142,15 @@ def process_folder_response(resp, gcs_path_format, queue='sync'):
     child_resource_responses = download_folder(resp['id'])
     uploaded_paths = []
     for child in child_resource_responses:
-        path = download_resource(child['id'], gcs_path_format=gcs_path_format)
+        path = download_resource(child['id'], gcs_path_format=gcs_path_format, tag=tag)
         uploaded_paths.append(path)
     return uploaded_paths
 
 
-def replicate_asset_to_gcs(resp, gcs_path_format):
+def replicate_asset_to_gcs(resp, gcs_path_format, tag=None):
     bucket_path = os.path.join(gcs_path_format, resp['title'])  # /foo/bar/baz/file.png
+    status = GoogleCloudStorageUploadStatus(tag=tag, bucket_path=bucket_path, status='started')
+    status.put()
     path = '/'.join(bucket_path.lstrip('/').split('/')[1:])  # bar/baz
     bucket = bucket_path.lstrip('/').split('/')[0]  # foo
     if True or not appengine_config.DEV_SERVER:
@@ -153,6 +163,8 @@ def replicate_asset_to_gcs(resp, gcs_path_format):
             # TODO - Verify if asset needs to be replicated.
             fp = download_asset_in_parts(resp['id'])
             write_gcs_file(path, bucket, fp, resp['mimeType'])
+            status.status = 'finished'
+            status.put()
     return bucket_path
 
 
@@ -192,6 +204,8 @@ def download_asset_in_parts(file_id):
 
 
 def write_gcs_file(path, bucket, fp, mimetype):
+    # Fix for handling SVGs.
+    mimetype = 'image/svg+xml' if path.endswith('.svg') else mimetype
     storage_service = get_storage_service()
     media = http.MediaIoBaseUpload(
         fp, mimetype=mimetype, chunksize=GCS_UPLOAD_CHUNKSIZE, resumable=True)

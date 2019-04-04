@@ -7,6 +7,13 @@ enable-services:
 	gcloud services enable drive --project=$(project)
 	gcloud services enable storage-api.googleapis.com --project=$(project)
 
+deploy-queue:
+	gcloud app deploy \
+	  -q \
+	  --project=$(project) \
+	  --verbosity=error \
+	  queue.yaml
+
 deploy:
 	gcloud app deploy \
 	  -q \
