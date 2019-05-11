@@ -1,5 +1,6 @@
 body {
   -webkit-font-smoothing: antialiased;
+  -webkit-font-smoothing: antialiased;
   background: #efefef;
   color: #333;
   font-family: 'Roboto', arial, 'sans-serif';
@@ -25,10 +26,7 @@ body {
 }
 
 .header__form {
-  display: flex;
-  flex-direction: column;
   text-align: center;
-  justify-content: center;
 }
 
 .header__form__side {
@@ -74,4 +72,14 @@ textarea {
   font-size: 13px;
   padding: 10px;
   width: 100%;
+}
+
+table {
+  border: 1px solid #efefef;
+  background: #fff;
+}
+
+table tr td {
+  border-bottom: 1px solid #efefef;
+  padding: 0 3px;
 }

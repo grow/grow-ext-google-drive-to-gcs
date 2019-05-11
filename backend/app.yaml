@@ -1,7 +1,7 @@
 api_version: 1
 instance_class: F4_1G
 runtime: python27
-threadsafe: false
+threadsafe: true
 service: uploader
 
 libraries:
@@ -14,6 +14,10 @@ builtins:
 - deferred: on
 
 handlers:
+- url: /_ah/admin/interactive.*
+  script: google.appengine.ext.admin.application
+  login: admin
+  secure: always
 - url: /_ah/queue/deferred
   script: google.appengine.ext.deferred.deferred.application
   login: admin

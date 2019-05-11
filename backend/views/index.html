@@ -33,27 +33,41 @@
   </div>
 </div>
 
+{% if tasks or tag %}
+<a href="?folder_id={{folder_id}}&gcs_path_format={{gcs_path_format}}&tag={{tag}}">Refresh upload status</a>
+  {% if tag_ent %}
+  ({{tag_ent.num_assets}} assets total)
+  {% endif %}
+{% if tasks %}
+<br><br>
+<textarea readonly>{{tasks|length}} tasks with tag {{tag}}</textarea>
+{% endif %}
+<br><br>
+{% endif %}
+
 {% if entities %}
 <table>
   <tr>
+    <th></th>
     <th></th>
     <th>Path</th>
     <th>Modified</th>
   </tr>
   {% for ent in entities %}
-  <tr>
-    <td style="user-select:none">{{ent.status}}</td>
-    <td>{{ent.bucket_path}}</td>
-    <td style="user-select:none">{{ent.modified}}</td>
-  </tr>
+    {% set parent_asset = parent_entity_ids_to_entities.get(ent.drive_id) %}
+    <tr>
+      <td style="user-select:none">{{ent.status}}</td>
+      <td style="user-select:none; {% if parent_asset and parent_asset.etag != ent.etag %} background: yellow{% endif %}">
+        <a href="{{ent.serving_url}}"><i class="material-icons">image</i></a>
+        {% if parent_asset %}
+          <a href="{{parent_asset.serving_url}}"><i class="material-icons">image</i></a>
+        {% endif %}
+      </td>
+      <td>{{ent.bucket_path}}</td>
+      <td style="user-select:none">{{ent.modified}}</td>
+    </tr>
   {% endfor %}
 </table>
-{% endif %}
-
-{% if tasks %}
-<a href="?folder_id={{folder_id}}&gcs_path_format={{gcs_path_format}}&tag={{tag}}">Check status</a>
-<br><br>
-<textarea readonly>{{tasks|length}} tasks with tag {{tag}}</textarea>
 {% endif %}
 
 {% if paths %}
