@@ -47,10 +47,10 @@ class MainHandler(webapp2.RequestHandler):
             entities = query.fetch()
         parent_entity_ids_to_entities = {}
         parent_tag = uploader.get_parent_tag(folder_id)
-        if parent_tag:
+        if folder_id and parent_tag:
             parent_query = uploader.Asset.query()
-            query = query.filter(uploader.Asset.tag == parent_tag)
-            query = query.order(uploader.Asset.basename)
+            parent_query = parent_query.filter(uploader.Asset.tag == parent_tag)
+            parent_query = parent_query.order(uploader.Asset.basename)
             parent_entities = query.fetch()
             for ent in parent_entities:
                 parent_entity_ids_to_entities[ent.drive_id] = ent

@@ -1,8 +1,10 @@
 api_version: 1
 instance_class: F4_1G
-runtime: python27
 threadsafe: true
 service: uploader
+runtime: python27
+#runtime: python
+#env: flex
 
 libraries:
 - name: webapp2

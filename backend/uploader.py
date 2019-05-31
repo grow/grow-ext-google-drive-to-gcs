@@ -212,6 +212,14 @@ def replicate_asset_to_gcs(resp, gcs_path_format, tag=None, parent_tag=None, upl
         blob_key = blobstore.create_gs_key(gs_path)
         url = images.get_serving_url(blob_key, secure_url=True)
         asset.serving_url = url
+    # Obfuscate filenames for mp4 files.
+    if ('mp4' in mimetype) and upload_to_cloud_images:
+        stat_result = gcs.stat(bucket_path)
+        clean_etag = stat_result.etag.replace('"', '').replace("'", '')
+        destination = '/{}/blobs/{}.mp4'.format(bucket, clean_etag)
+        gcs.copy2(bucket_path, destination)
+        url = 'https://storage.googleapis.com/{}'.format(destination.lstrip('/'))
+        asset.serving_url = url
     asset.status = 'finished'
     asset.put()
     return bucket_path
