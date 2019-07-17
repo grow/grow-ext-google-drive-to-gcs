@@ -157,7 +157,7 @@ def download_resource(resource_id, gcs_path_format=None, tag=None, parent_tag=No
         logging.info('Processing file: {} ({})'.format(title, resource_id))
         return deferred.defer(replicate_asset_to_gcs, resp, gcs_path_format, tag=tag, parent_tag=parent_tag)
         # NOTE: Can use deferred here instead.
-        return replicate_asset_to_gcs(resp, gcs_path_format=gcs_path_format)
+#        return replicate_asset_to_gcs(resp, gcs_path_format=gcs_path_format)
 
 
 def process_folder_response(resp, gcs_path_format, tag=None):
