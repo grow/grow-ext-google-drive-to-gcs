@@ -1,1 +1,1 @@
-from google_drive_to_gcs import *
+from .google_drive_to_gcs import GoogleDriveToGCSExtension
